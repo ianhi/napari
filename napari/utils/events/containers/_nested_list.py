@@ -151,21 +151,21 @@ class NestableEventedList(EventedList[_T]):
     # def remove(self, value: T): ...
 
     @overload  # type: ignore
-    def __getitem__(self, key: int) -> Union[_T, 'NestableEventedList[_T]']:
+    def __getitem__(self, key: int) -> Union[_T, NestableEventedList[_T]]:
         ...  # pragma: no cover
 
     @overload
-    def __getitem__(self, key: ParentIndex) -> 'NestableEventedList[_T]':
+    def __getitem__(self, key: ParentIndex) -> NestableEventedList[_T]:
         ...  # pragma: no cover
 
     @overload
-    def __getitem__(self, key: slice) -> 'NestableEventedList[_T]':  # noqa
+    def __getitem__(self, key: slice) -> NestableEventedList[_T]:  # noqa
         ...  # pragma: no cover
 
     @overload
     def __getitem__(
         self, key: NestedIndex
-    ) -> Union[_T, 'NestableEventedList[_T]']:
+    ) -> Union[_T, NestableEventedList[_T]]:
         ...  # pragma: no cover
 
     def __getitem__(self, key: MaybeNestedIndex):
@@ -177,7 +177,7 @@ class NestableEventedList(EventedList[_T]):
         return super().__getitem__(key)
 
     @overload
-    def __setitem__(self, key: Union[int, NestedIndex], value: _T):
+    def __setitem__(self, key: int | NestedIndex, value: _T):
         ...  # pragma: no cover
 
     @overload
@@ -381,8 +381,8 @@ class NestableEventedList(EventedList[_T]):
 
     def move(
         self,
-        src_index: Union[int, NestedIndex],
-        dest_index: Union[int, NestedIndex] = (0,),
+        src_index: int | NestedIndex,
+        dest_index: int | NestedIndex = (0,),
     ) -> bool:
         """Move a single item from ``src_index`` to ``dest_index``.
 

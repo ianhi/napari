@@ -79,8 +79,8 @@ def test_range_popup_clim_buttons(mock_show, qtbot, layer):
     if np.issubdtype(layer.dtype, np.integer):
         rangebtn.click()
         qtbot.wait(20)
-        assert tuple(layer.contrast_limits_range) == (0, 2 ** 16 - 1)
-        assert tuple(qtctrl.contrastLimitsSlider.range()) == (0, 2 ** 16 - 1)
+        assert tuple(layer.contrast_limits_range) == (0, 2**16 - 1)
+        assert tuple(qtctrl.contrastLimitsSlider.range()) == (0, 2**16 - 1)
     else:
         assert rangebtn is None
 
@@ -91,7 +91,7 @@ def test_clim_slider_step_size_and_precision(qtbot, mag):
 
     ...across a broad range of orders of magnitude.
     """
-    layer = Image(np.random.rand(20, 20) / 10 ** mag)
+    layer = Image(np.random.rand(20, 20) / 10**mag)
     popup = create_range_popup(layer, 'contrast_limits')
     qtbot.addWidget(popup)
     # the range slider popup labels should have a number of decimal points that

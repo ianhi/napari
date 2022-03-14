@@ -499,7 +499,7 @@ class Vectors(Layer):
                 self._update_thumbnail()
 
     def _is_color_mapped(self, color) -> bool:
-        """ determines if the new color argument is for directly setting or cycle/colormap"""
+        """determines if the new color argument is for directly setting or cycle/colormap"""
         if isinstance(color, str):
             if color in self.properties:
                 return True
@@ -606,7 +606,7 @@ class Vectors(Layer):
 
     @property
     def _view_face_color(self) -> np.ndarray:
-        """" (Mx4) np.ndarray : colors for the M in view vectors"""
+        """ " (Mx4) np.ndarray : colors for the M in view vectors"""
         face_color = np.repeat(self.edge_color[self._view_indices], 2, axis=0)
         if self._ndisplay == 3 and self.ndim > 2:
             face_color = np.vstack([face_color, face_color])

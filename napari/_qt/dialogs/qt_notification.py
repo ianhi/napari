@@ -70,8 +70,8 @@ class NapariQtNotification(QDialog):
     def __init__(
         self,
         message: str,
-        severity: Union[str, NotificationSeverity] = 'WARNING',
-        source: Optional[str] = None,
+        severity: str | NotificationSeverity = 'WARNING',
+        source: str | None = None,
         actions: ActionSequence = (),
     ):
         """[summary]"""

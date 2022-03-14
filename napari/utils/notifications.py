@@ -52,9 +52,9 @@ class Notification(Event):
     def __init__(
         self,
         message: str,
-        severity: Union[
-            str, NotificationSeverity
-        ] = NotificationSeverity.WARNING,
+        severity: (
+            str | NotificationSeverity
+        ) = NotificationSeverity.WARNING,
         actions: ActionSequence = (),
         **kwargs,
     ):
@@ -67,11 +67,11 @@ class Notification(Event):
         self.date = datetime.now()
 
     @classmethod
-    def from_exception(cls, exc: BaseException, **kwargs) -> 'Notification':
+    def from_exception(cls, exc: BaseException, **kwargs) -> Notification:
         return ErrorNotification(exc, **kwargs)
 
     @classmethod
-    def from_warning(cls, warning: Warning, **kwargs) -> 'Notification':
+    def from_warning(cls, warning: Warning, **kwargs) -> Notification:
         return WarningNotification(warning, **kwargs)
 
 
@@ -116,11 +116,11 @@ class NotificationManager:
     re-entrency of the hooks themselves.
     """
 
-    records: List[Notification]
-    _instance: Optional[NotificationManager] = None
+    records: list[Notification]
+    _instance: NotificationManager | None = None
 
     def __init__(self) -> None:
-        self.records: List[Notification] = []
+        self.records: list[Notification] = []
         self.exit_on_error = os.getenv('NAPARI_EXIT_ON_ERROR') in ('1', 'True')
         self.notification_ready = self.changed = EventEmitter(
             source=self, event_class=Notification
@@ -161,7 +161,7 @@ class NotificationManager:
 
     def receive_error(
         self,
-        exctype: Type[BaseException],
+        exctype: type[BaseException],
         value: BaseException,
         traceback: TracebackType,
     ):
@@ -178,7 +178,7 @@ class NotificationManager:
     def receive_warning(
         self,
         message: Warning,
-        category: Type[Warning],
+        category: type[Warning],
         filename: str,
         lineno: int,
         file=None,
