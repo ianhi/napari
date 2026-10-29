@@ -14,7 +14,7 @@ def test_scene_axes_dimensions_properly_detected():
         viewer=viewer, overlay=gridlines_model, font_info=FontInfo()
     )
     viewer.add_image(
-        np.zeros((10, 10, 10)), scale=(1234, 1, 0.002), translate=(-30, 2, 1)
+        np.zeros((10, 10, 10)), scale=(1234, 0.3, 0.002), translate=(-30, 2, 1)
     )
 
     viewer.dims.ndisplay = 2
@@ -30,5 +30,5 @@ def test_scene_axes_dimensions_properly_detected():
             [float(t) for t in ticks.text],
             compute_nice_ticks(
                 range_.start, range_.stop, gridlines_model.n_ticks
-            ),
+            )[0],
         )

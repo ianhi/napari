@@ -62,11 +62,21 @@ def _generate_ticks(
 
 def compute_nice_ticks(
     min_value: float, max_value: float, target_ticks: int = 5
-) -> np.ndarray:
+) -> tuple[np.ndarray, int]:
+    """Compute round tick values spanning a range.
+
+    Returns
+    -------
+    ticks : np.ndarray
+        The tick values.
+    decimals : int
+        Decimal places needed to show the ticks exactly.
+    """
     best_ticks = np.empty(0, float)
+    best_step = Decimal(1)
 
     if min_value == max_value:
-        return best_ticks
+        return best_ticks, 0
 
     # Decimal needed for small values float imprecision
     # we need to convert to str first, otherwise Decimal just takes the
@@ -90,5 +100,9 @@ def compute_nice_ticks(
                 len(best_ticks) - target_ticks
             ):
                 best_ticks = ticks
+                best_step = Decimal(base) * Decimal(10) ** exp
 
-    return best_ticks
+    # ticks are multiples of the step, so the step's last significant
+    # digit is the precision every tick needs (e.g. 0.75 -> 2)
+    exponent = best_step.normalize().as_tuple().exponent
+    return best_ticks, max(0, -int(exponent))
