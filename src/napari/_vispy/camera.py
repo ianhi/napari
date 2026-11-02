@@ -444,5 +444,32 @@ def add_mouse_pan_zoom_toggles(
     return _vispy_camera_cls
 
 
+class ZoomToCursorArcballCamera(ArcballCamera):
+    """Arcball camera that zooms about the cursor, like the 2D camera.
+
+    VisPy's 3D cameras always zoom about the camera center. Here the center is
+    also moved toward the point under the cursor, on the plane through the
+    center facing the camera, so that point stays fixed on screen. With an
+    orthographic camera (fov=0) this holds for every depth.
+    """
+
+    def viewbox_mouse_event(self, event: VispyEvent) -> None:
+        if event.type not in ('mouse_wheel', 'gesture_zoom'):
+            super().viewbox_mouse_event(event)
+            return
+        tr = self._scene_transform  # pyrefly: ignore [missing-attribute]
+        center = np.asarray(self.center)
+        _, _, depth, w = tr.map(center)
+        pos = event.pos[:2]  # pyrefly: ignore [missing-attribute]
+        anchor = tr.imap([*pos, depth / w, 1])
+        anchor = anchor[:3] / anchor[3]
+        scale_factor = self.scale_factor
+        super().viewbox_mouse_event(event)
+        ratio = self.scale_factor / scale_factor
+        self.center = tuple(anchor + (center - anchor) * ratio)
+
+
 MouseToggledPanZoomCamera = add_mouse_pan_zoom_toggles(PanZoomCamera)
-MouseToggledArcballCamera = add_mouse_pan_zoom_toggles(ArcballCamera)
+MouseToggledArcballCamera = add_mouse_pan_zoom_toggles(
+    ZoomToCursorArcballCamera
+)

@@ -205,6 +205,35 @@ def test_synced_camera_ndisplay_vispy_sync(make_napari_viewer):
     np.testing.assert_almost_equal(viewer.scene.camera.zoom, vispy_camera.zoom)
 
 
+@pytest.mark.parametrize('perspective', [0, 45])
+@pytest.mark.parametrize('angles', [(0, 0, 90), (20, 35, 140)])
+def test_3D_wheel_zoom_keeps_point_under_cursor(
+    make_napari_viewer, perspective, angles
+):
+    """Wheel zoom in 3D keeps the point under the cursor fixed, as in 2D."""
+    viewer = make_napari_viewer()
+    viewer.add_image(np.zeros((11, 11, 11)))
+    viewer.dims.ndisplay = 3
+    viewer.scene.camera.angles = angles
+    viewer.scene.camera.perspective = perspective
+
+    canvas = viewer.window._qt_viewer.canvas
+    camera = canvas.view.camera
+    pos = np.array(canvas.view.rect.size) * [0.2, 0.7]
+
+    tr = camera._scene_transform
+    _, _, depth, w = tr.map(camera.center)
+    anchor = tr.imap([*pos, depth / w, 1])
+    zoom = viewer.scene.camera.zoom
+
+    canvas._scene_canvas.events.mouse_wheel(pos=pos, delta=(0, 3))
+    canvas.camera.on_draw(None)
+
+    assert viewer.scene.camera.zoom > zoom
+    moved = camera._scene_transform.map(anchor)
+    np.testing.assert_allclose(moved[:2] / moved[3], pos, atol=1e-4)
+
+
 @pytest.mark.skipif(
     sys.platform == 'win32', reason='This new test is flaky on windows'
 )
